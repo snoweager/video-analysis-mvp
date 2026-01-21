@@ -1,0 +1,42 @@
+# =====================
+# Python cache files
+# =====================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.py[cod]
+
+# =====================
+# Virtual environments
+# =====================
+venv/
+.env/
+.env.*
+
+# =====================
+# Local databases
+# =====================
+*.db
+data/*.db
+
+# =====================
+# Snapshots & media (PRIVATE)
+# =====================
+snapshots/
+data/snapshots/
+*.jpg
+*.png
+
+# =====================
+# Logs
+# =====================
+*.log
+
+# =====================
+# OS / Editor junk
+# =====================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
