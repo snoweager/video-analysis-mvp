@@ -1,1 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Video Analytics MVP</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 6px;
+      text-align: left;
+      font-size: 14px;
+    }
+    tr:hover {
+      background-color: #f2f2f2;
+      cursor: pointer;
+    }
+    img {
+      margin-top: 10px;
+      max-width: 500px;
+      border: 1px solid #333;
+    }
+  </style>
+</head>
 
+<body>
+
+<h2>📷 Cameras</h2>
+<table id="cameraTable">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Location</th>
+      <th>Status</th>
+      <th>Last Frame</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<h2>🚨 Events</h2>
+<table id="eventTable">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Camera</th>
+      <th>Rule</th>
+      <th>Object</th>
+      <th>Confidence</th>
+      <th>Time</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<h2>🖼️ Snapshot</h2>
+<img id="snapshot" src="" alt="Click an event">
+
+<script>
+const API = "http://127.0.0.1:8000";
+
+// -------- CAMERAS --------
+async function loadCameras() {
+  const res = await fetch(`${API}/cameras`);
+  const cameras = await res.json();
+
+  const tbody = document.querySelector("#cameraTable tbody");
+  tbody.innerHTML = "";
+
+  cameras.forEach(cam => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${cam.id}</td>
+      <td>${cam.name}</td>
+      <td>${cam.location || "-"}</td>
+      <td>${cam.status}</td>
+      <td>${cam.last_frame_time || "-"}</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+// -------- EVENTS --------
+async function loadEvents() {
+  const res = await fetch(`${API}/events`);
+  const events = await res.json();
+
+  const tbody = document.querySelector("#eventTable tbody");
+  tbody.innerHTML = "";
+
+  events.forEach(evt => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${evt.id}</td>
+      <td>${evt.camera_id}</td>
+      <td>${evt.rule}</td>
+      <td>${evt.object_type}</td>
+      <td>${evt.confidence.toFixed(2)}</td>
+      <td>${evt.timestamp}</td>
+    `;
+
+    row.onclick = () => {
+      document.getElementById("snapshot").src =
+        `${API}${evt.snapshot_path}?t=${Date.now()}`;
+    };
+
+    tbody.appendChild(row);
+  });
+}
+
+// -------- AUTO REFRESH --------
+loadCameras();
+loadEvents();
+
+setInterval(() => {
+  loadCameras();
+  loadEvents();
+}, 2000);
+</script>
+
+</body>
+</html>
